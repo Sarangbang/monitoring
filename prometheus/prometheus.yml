@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'node'
+    static_configs:
+      # NODE_EXPORTER_TARGET 변수에 지정된 IP와 포트를 사용합니다.
+      - targets: ['${NODE_EXPORTER_TARGET}']
+
+  - job_name: 'spring'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      # SPRING_APP_TARGET 변수에 지정된 값을 사용합니다.
+      - targets: ['${SPRING_APP_TARGET}']
