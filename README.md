@@ -29,6 +29,8 @@
 # ── Grafana ─────────────────────────────────────────
 GRAFANA_ADMIN_PASSWORD=ChangeMe123!
 GRAFANA_DOMAIN=
+# Grafana가 사용할 포트(기본 3000)
+GRAFANA_PORT=3000
 
 # ── 이미지 태그(선택) ─────────────────────────────────
 PROMETHEUS_IMAGE_TAG=v2.48.0
@@ -43,6 +45,7 @@ SPRING_APP_TARGET=10.0.0.20:8080
 ```
 
 환경 변수 파일을 복사하여 실제 값을 입력한 뒤 사용합니다.
+`GRAFANA_PORT` 값을 수정하면 Grafana를 다른 포트에 매핑할 수 있습니다.
 
 ## docker-compose.yml
 
@@ -74,13 +77,14 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
       - GF_SERVER_DOMAIN=${GRAFANA_DOMAIN}
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_SERVER_HTTP_PORT=${GRAFANA_PORT:-3000}
     volumes:
       - ./data/grafana:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
     depends_on:
       - prometheus
     ports:
-      - "3000:3000"
+      - "${GRAFANA_PORT:-3000}:3000"
     restart: unless-stopped
 
   node_exporter:
