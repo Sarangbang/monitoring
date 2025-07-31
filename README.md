@@ -37,6 +37,9 @@ NODE_EXPORTER_IMAGE_TAG=v1.8.1
 
 # ── TSDB 보존 주기 (일) ─────────────────────────────
 PROM_RETENTION_DAYS=30
+# ── 모니터링 대상 IP 설정 ────────
+NODE_EXPORTER_TARGET=10.0.0.10:9100
+SPRING_APP_TARGET=10.0.0.20:8080
 ```
 
 환경 변수 파일을 복사하여 실제 값을 입력한 뒤 사용합니다.
@@ -50,12 +53,16 @@ services:
   prometheus:
     image: prom/prometheus:${PROMETHEUS_IMAGE_TAG:-v2.48.0}
     container_name: prometheus
+    environment:
+      - NODE_EXPORTER_TARGET=${NODE_EXPORTER_TARGET}
+      - SPRING_APP_TARGET=${SPRING_APP_TARGET}
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./data/prometheus:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.retention.time=${PROM_RETENTION_DAYS:-30}d'
+      - '--enable-feature=expand-env'
     ports:
       - "9090:9090"
     restart: unless-stopped
@@ -98,12 +105,12 @@ global:
 scrape_configs:
   - job_name: 'node'
     static_configs:
-      - targets: ['10.0.0.10:9100']
+      - targets: ['${NODE_EXPORTER_TARGET}']
 
   - job_name: 'spring'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      - targets: ['10.0.0.20:8080']
+      - targets: ['${SPRING_APP_TARGET}']
 ```
 
 ## Grafana Provisioning

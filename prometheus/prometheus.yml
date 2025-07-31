@@ -5,11 +5,11 @@ global:
 scrape_configs:
   - job_name: 'node'
     static_configs:
-      # 모니터링 대상 서버의 프라이빗 IP와 Node Exporter 포트를 지정합니다.
-      - targets: ['10.0.0.10:9100']
+      # NODE_EXPORTER_TARGET 변수에 지정된 IP와 포트를 사용합니다.
+      - targets: ['${NODE_EXPORTER_TARGET}']
 
   - job_name: 'spring'
     metrics_path: '/actuator/prometheus'
     static_configs:
-      # Spring 애플리케이션이 실행 중인 서버의 프라이빗 IP와 포트를 입력합니다.
-      - targets: ['10.0.0.20:8080']
+      # SPRING_APP_TARGET 변수에 지정된 값을 사용합니다.
+      - targets: ['${SPRING_APP_TARGET}']

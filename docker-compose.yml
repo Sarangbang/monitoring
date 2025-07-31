@@ -4,12 +4,16 @@ services:
   prometheus:
     image: prom/prometheus:${PROMETHEUS_IMAGE_TAG:-v2.48.0}
     container_name: prometheus
+    environment:
+      - NODE_EXPORTER_TARGET=${NODE_EXPORTER_TARGET}
+      - SPRING_APP_TARGET=${SPRING_APP_TARGET}
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./data/prometheus:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.retention.time=${PROM_RETENTION_DAYS:-30}d'
+      - '--enable-feature=expand-env'
     ports:
       - "9090:9090"
     restart: unless-stopped
